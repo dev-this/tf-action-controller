@@ -4,6 +4,8 @@ import (
 	"bytes"
 )
 
+type StdoutCallback func(chunk string)
+
 type Writer struct {
 	callback StdoutCallback
 }

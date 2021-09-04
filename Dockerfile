@@ -1,15 +1,19 @@
-FROM golang:1.16-alpine AS builder
+FROM alpine:3.14
+WORKDIR /workbench
+
+# https://www.terraform.io/docs/cli/config/environment-variables.html
+ENV TF_IN_AUTOMATION="yesplz"
+
+RUN apk add --no-cache git terraform curl bash
+RUN apk add --no-cache kubectl helm --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 WORKDIR /go/src/app
-COPY go.mod ./
-COPY go.sum ./
-COPY *.go ./
 
-RUN CGO_ENABLED=0 go build -ldflags="-w -s" .
+RUN curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash && \
+    mv /go/src/app/kustomize /usr/bin/kustomize
 
-FROM scratch
+COPY server terraform-gha-controller
 
-COPY --from=builder /go/src/app/faksqldb-server /app/
-COPY tmp/terraform /usr/bin/terraform
+EXPOSE 8080
 
-ENTRYPOINT ["/app/faksqldb-server"]
+CMD ["/go/src/app/terraform-gha-controller"]
