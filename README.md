@@ -64,7 +64,7 @@ docker run -p 8080:8080 \
     -e TF_CLI_CONFIG_FILE=/.terraform/.terraformrc \
     -v "/home/user/github/github-app.key:/config/github-app.key" \
     -v "/home/user/.:/config/github-app.key" \
-    f9b3bc8cfe39
+    ghcr.io/dev-this/tf-gha-orch:latest
 ```
 
 ### Submit Request
