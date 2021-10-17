@@ -79,7 +79,7 @@ func main() {
 			event = webhook.NewEvent(
 				pushEvent.GetHeadCommit().GetID(),
 				pushEvent.GetRepo().GetMasterBranch(),
-				pushEvent.GetPusher().GetLogin(),
+				pushEvent.GetRepo().GetOwner().GetName(),
 				pushEvent.GetRepo().GetName(),
 			)
 			options = append(options, webhook.WithApply)
