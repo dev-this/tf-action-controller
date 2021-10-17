@@ -8,9 +8,9 @@ import (
 )
 
 func TestValidator_ValidatePushEvent(t *testing.T) {
-	cases := []struct{
-		name string
-		want error
+	cases := []struct {
+		name  string
+		want  error
 		event github.PushEvent
 	}{
 		{
@@ -49,9 +49,9 @@ func TestValidator_ValidatePushEvent(t *testing.T) {
 }
 
 func TestValidator_ValidateWorkflowRunEvent(t *testing.T) {
-	cases := []struct{
-		name string
-		want error
+	cases := []struct {
+		name  string
+		want  error
 		event github.WorkflowRunEvent
 	}{
 		{
