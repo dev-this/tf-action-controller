@@ -6,26 +6,9 @@ import (
 	"log"
 )
 
-type WorkflowRunEvent struct {
-	*github.WorkflowRunEvent
-}
-
 // ParseWorkflowRunEvent needs generics
 func ParseWorkflowRunEvent(payload []byte) (*github.WorkflowRunEvent, error) {
 	evt := &github.WorkflowRunEvent{}
-	if err := json.Unmarshal(payload, evt); err != nil {
-		log.Println("Invalid JSON?", err)
-
-		return evt, err
-	}
-
-	return evt, nil
-}
-
-// ParsePullRequestEvent needs generics
-func ParsePullRequestEvent(payload []byte) (*github.PullRequestEvent, error) {
-	evt := &github.PullRequestEvent{}
-
 	if err := json.Unmarshal(payload, evt); err != nil {
 		log.Println("Invalid JSON?", err)
 

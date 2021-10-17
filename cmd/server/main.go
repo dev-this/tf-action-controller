@@ -44,6 +44,7 @@ func main() {
 
 	// Prepare GitHub client...
 	ghClient := github.NewClient(applicationID, installationID, privateKey)
+	validator := webhook.Validator{}
 
 	http.HandleFunc("/webhook", func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Got connection: %s", r.Proto)
@@ -55,10 +56,11 @@ func main() {
 		}
 
 		var (
-			event webhook.Event
+			event   webhook.Event
 			options []webhook.HandlerOption
 		)
 
+		// get event type from header (eg. X-GitHub-Event: check_suite)
 		switch hook.Event {
 		case "push":
 			pushEvent, err := github.ParsePushEvent(hook.Payload)
@@ -68,19 +70,14 @@ func main() {
 				return
 			}
 
-			isDefaultBranch := pushEvent.GetRef() == fmt.Sprintf("refs/heads/%s", pushEvent.GetRepo().GetDefaultBranch())
-			head := pushEvent.GetHeadCommit()
-
-			// ensure pull request was merged to default (primary)  branch, was closed + merged (ie. not just closed)
-			//if !pullRequestEvent.GetPullRequest().GetMerged() || pullRequestEvent.GetAction() != "closed" || !isDefaultBranch {
-			if !isDefaultBranch {
-				log.Println("Skipping webhook")
+			if err = validator.ValidatePushEvent(*pushEvent); err != nil {
+				log.Println("event did not meet criteria to run", err)
 
 				return
 			}
 
 			event = webhook.NewEvent(
-				head.GetID(),
+				pushEvent.GetHeadCommit().GetID(),
 				pushEvent.GetRepo().GetMasterBranch(),
 				pushEvent.GetPusher().GetLogin(),
 				pushEvent.GetRepo().GetName(),
@@ -90,7 +87,6 @@ func main() {
 		case "workflow_run":
 			log.Println("Found workflow_run")
 
-			// get event type from header (eg. X-GitHub-Event: check_suite)
 			workflowRun, err := github.ParseWorkflowRunEvent(hook.Payload)
 			if err != nil {
 				log.Println("Invalid JSON?", err)
@@ -98,17 +94,16 @@ func main() {
 				return
 			}
 
-			if workflowRun.GetWorkflowRun().GetConclusion() != "success" {
-				log.Println("Skipping cause conclusion was not success")
+			if err = validator.ValidateWorkflowRunEvent(*workflowRun); err != nil {
+				log.Println("event did not meet criteria to run", err)
 
-				// we only want to trigger on success
 				return
 			}
 
 			event = webhook.NewEvent(
 				workflowRun.GetWorkflowRun().GetHeadSHA(),
 				workflowRun.GetWorkflowRun().GetHeadBranch(),
-				workflowRun.GetOrg().GetLogin(),
+				workflowRun.GetRepo().GetOwner().GetName(),
 				workflowRun.GetRepo().GetName(),
 			)
 			options = append(options, webhook.WithPlan)
