@@ -104,7 +104,7 @@ func main() {
 				workflowRun.GetWorkflowRun().GetHeadSHA(),
 				workflowRun.GetWorkflowRun().GetHeadBranch(),
 				workflowRun.GetWorkflowRun().GetHeadRepository().GetOwner().GetLogin(),
-				workflowRun.GetWorkflowRun().GetName(),
+				workflowRun.GetRepo().GetName(),
 			)
 			options = append(options, webhook.WithPlan)
 
