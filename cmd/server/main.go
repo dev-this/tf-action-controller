@@ -79,7 +79,7 @@ func main() {
 			event = webhook.NewEvent(
 				pushEvent.GetHeadCommit().GetID(),
 				pushEvent.GetRepo().GetMasterBranch(),
-				pushEvent.GetRepo().GetOwner().GetName(),
+				pushEvent.GetRepo().GetOwner().GetLogin(),
 				pushEvent.GetRepo().GetName(),
 			)
 			options = append(options, webhook.WithApply)
@@ -103,7 +103,7 @@ func main() {
 			event = webhook.NewEvent(
 				workflowRun.GetWorkflowRun().GetHeadSHA(),
 				workflowRun.GetWorkflowRun().GetHeadBranch(),
-				workflowRun.GetRepo().GetOwner().GetName(),
+				workflowRun.GetRepo().GetOwner().GetLogin(),
 				workflowRun.GetRepo().GetName(),
 			)
 			options = append(options, webhook.WithPlan)
