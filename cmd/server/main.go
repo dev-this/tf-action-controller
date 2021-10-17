@@ -103,8 +103,8 @@ func main() {
 			event = webhook.NewEvent(
 				workflowRun.GetWorkflowRun().GetHeadSHA(),
 				workflowRun.GetWorkflowRun().GetHeadBranch(),
-				workflowRun.GetRepo().GetOwner().GetLogin(),
-				workflowRun.GetRepo().GetName(),
+				workflowRun.GetWorkflowRun().GetHeadRepository().GetOwner().GetLogin(),
+				workflowRun.GetWorkflowRun().GetName(),
 			)
 			options = append(options, webhook.WithPlan)
 
