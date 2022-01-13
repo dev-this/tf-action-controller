@@ -35,11 +35,12 @@ func (r *TfRunner) Plan(ctx context.Context) (*Execution, func(func()) error) {
 	})
 }
 
-func (r *TfRunner) setupWriters(cb StdoutCallback) {
+func (r *TfRunner) setupWriters(cb IOCallback) {
 	writer := NewWriter(cb)
 	r.runner.SetStdout(writer)
 	r.runner.SetStderr(writer)
 }
+
 func (r *TfRunner) newExecution(action func(r *TfRunner) error) (*Execution, func(func()) error) {
 	section := &Execution{
 		Details:      "",

@@ -2,15 +2,22 @@ package runner
 
 import (
 	"bytes"
+	"io"
 )
 
-type StdoutCallback func(chunk string)
+// Ensure interface is implemented
+var _ io.Writer = (*OutputWriter)(nil)
 
-type Writer struct {
-	callback StdoutCallback
+// IOCallback is the signature for compatible callbacks with OutputWriter
+type IOCallback func(chunk string)
+
+// OutputWriter is a dumb IO writer that will parse bytes to a string, passing it to a callback.
+type OutputWriter struct {
+	callback IOCallback
 }
 
-func (w *Writer) Write(p []byte) (n int, err error) {
+// Write is method to make IO Writer interface happy.
+func (w *OutputWriter) Write(p []byte) (n int, err error) {
 	buf := bytes.NewBuffer(p)
 
 	w.callback(buf.String())
@@ -18,6 +25,6 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-func NewWriter(callback StdoutCallback) *Writer {
-	return &Writer{callback}
+func NewWriter(callback IOCallback) *OutputWriter {
+	return &OutputWriter{callback}
 }

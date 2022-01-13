@@ -23,7 +23,7 @@ func (v *Validator) ValidatePushEvent(pushEvent github.PushEvent) error {
 	defaultBranch := fmt.Sprintf("refs/heads/%s", pushEvent.GetRepo().GetDefaultBranch())
 
 	// ensure pull request was merged to default (primary)  branch, was closed + merged (ie. not just closed)
-	//if !pullRequestEvent.GetPullRequest().GetMerged() || pullRequestEvent.GetAction() != "closed" || !isDefaultBranch {
+	// if !pullRequestEvent.GetPullRequest().GetMerged() || pullRequestEvent.GetAction() != "closed" || !isDefaultBranch {
 	if pushEvent.GetRef() != defaultBranch {
 		log.Println("Skipping webhook")
 

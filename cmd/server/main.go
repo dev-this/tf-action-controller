@@ -6,8 +6,6 @@ import (
 	"github.com/dev-this/terraform-gha-controller/internal/webhook"
 	"log"
 	"net/http"
-	"os"
-	"strconv"
 )
 
 const (
@@ -15,23 +13,14 @@ const (
 )
 
 var (
-	build          = "development"
-	port           = os.Getenv("PORT")
-	_              = os.Getenv("GH_SECRET")
-	appID          = os.Getenv("APP_ID")
-	installationID = os.Getenv("INSTALLATION_ID")
-	privateKey     = os.Getenv("PRIVATE_KEY")
-
 	requiredEnvKeys = []string{"APP_ID", "INSTALLATION_ID", "PRIVATE_KEY", "GH_OWNER"}
 )
 
 func main() {
-	if port == "" {
-		port = DefaultPort
-	}
-
 	// Ensure required environment variables exist.
 	checkEnvKeys()
+
+	runtimeParams := ParseRuntimeParameters()
 
 	// Pre-checks TODO
 	//  [ ] GitHub API Authentication
@@ -39,11 +28,12 @@ func main() {
 	//  [ ] Filesystem writeable /tmp
 	//  [ ] Terraform binary... executable?
 
-	applicationID, _ := strconv.ParseInt(appID, 10, 64)
-	installationID, _ := strconv.ParseInt(installationID, 10, 64)
-
 	// Prepare GitHub client...
-	ghClient := github.NewClient(applicationID, installationID, privateKey)
+	ghClient := github.NewClient(
+		runtimeParams.githubAppID,
+		runtimeParams.githubAppInstallationID,
+		runtimeParams.githubAppPrivateKey,
+	)
 	validator := webhook.Validator{}
 
 	http.HandleFunc("/webhook", func(w http.ResponseWriter, r *http.Request) {
@@ -120,24 +110,9 @@ func main() {
 	})
 
 	srv := &http.Server{
-		Addr: fmt.Sprintf(":%s", port),
+		Addr: fmt.Sprintf(":%s", runtimeParams.servicePort),
 	}
 
-	log.Printf("Serving on http://0.0.0.0:%s", port)
+	log.Printf("Serving on %s", srv.Addr)
 	log.Fatal(srv.ListenAndServe())
-	// log.Fatal(srv.ListenAndServeTLS("server.crt", "server.key"))
-}
-
-func checkEnvKeys() {
-	missingEnvKeys := []string{}
-
-	for _, requiredEnvKey := range requiredEnvKeys {
-		if _, ok := os.LookupEnv(requiredEnvKey); !ok {
-			missingEnvKeys = append(missingEnvKeys, requiredEnvKey)
-		}
-	}
-
-	if len(missingEnvKeys) > 0 {
-		log.Fatalf("missing defined env vars: %s", missingEnvKeys)
-	}
 }
