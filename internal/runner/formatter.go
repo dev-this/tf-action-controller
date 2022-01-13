@@ -18,6 +18,8 @@ func workOutPrefixEmoji(isCompleted bool, isSuccessful bool) string {
 	return ":thinking:"
 }
 
+// FormatSections will render Execution into something attempted to be parsed by humans.
+// TODO: Refactor away the grossness.
 func FormatSections(sections ...*Execution) string {
 	details := ""
 	shouldCollapse := len(sections) > 1
