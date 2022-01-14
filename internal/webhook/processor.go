@@ -8,11 +8,11 @@ import (
 	"log"
 )
 
-func Handler(ctx context.Context, client *github.Client, event Event, options ...HandlerOption) {
+func Handler(ctx context.Context, client *github.Client, event Event, options ...HandlerOption) error {
 	if event.owner != *GhOwner {
 		log.Printf("%s does not match configured GH_OWNER %s - not processing event\n", event.owner, *GhOwner)
 
-		return
+		return nil
 	}
 
 	// Tempdir to clone the repository
@@ -62,7 +62,7 @@ func Handler(ctx context.Context, client *github.Client, event Event, options ..
 		default:
 			log.Println("failed to recognise webhook type")
 
-			return
+			return nil
 		}
 	}
 
@@ -79,7 +79,7 @@ func Handler(ctx context.Context, client *github.Client, event Event, options ..
 			session.SetCompletion("completed", "failure")
 			_ = client.FlushSession(ctx, session)
 
-			return
+			return err
 		}
 	}
 
@@ -87,8 +87,10 @@ func Handler(ctx context.Context, client *github.Client, event Event, options ..
 	if err := client.FlushSession(ctx, session); err != nil {
 		log.Println("COMPLETION FAILED", err)
 
-		return
+		return err
 	}
+
+	return nil
 }
 
 func baseSteps(ctx context.Context, client *github.Client, dir string, session *github.CheckRunSession, event Event, tf *runner.TfRunner) []func() error {

@@ -104,7 +104,12 @@ func main() {
 			return
 		}
 
-		webhook.Handler(r.Context(), ghClient, event, options...)
+		if err := webhook.Handler(r.Context(), ghClient, event, options...); err != nil {
+			w.WriteHeader(400)
+			w.Write([]byte("Failed"))
+
+			return
+		}
 
 		w.Write([]byte("Thanks!"))
 	})
