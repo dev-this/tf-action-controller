@@ -4,9 +4,12 @@ Run Terraform within controlled private environments.
 **Not currently suitable for use in production environments**
 
 ## Why does this exist?
-To encourage invoking your IaC pipeline from a secure network.
+Because running allowing Terraform to orchestrate your infrastructure requires some pretty generous permissions.
+
+Terraform To encourage invoking your IaC pipeline from a secure network.
 
 ## Features
+
 - Tightly integrated with GitHub Checks API
 - GitHub webhook secret verification
 - GitHub checks API
@@ -17,10 +20,11 @@ Tooling out of the box:
 
 ## Roadmap to v1
 
-- [ ] [**Security**] Temporary persistence
+- [ ] [**Security**] Temporary (or virtual) persistence
 - [ ] [**Feature**] Tooling extensibility (without Docker build'ing)
 - [ ] [**Security**] Rootless container (or fakeroot?)
 - [ ] [**Feature**] Multiple GitHub repository support
+- [ ] [**Pull Mode**] Lessen the attack service by running on a private interface
 - [ ] [**Tests**] More please
 
 #### v2 ideas

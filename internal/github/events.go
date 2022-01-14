@@ -9,6 +9,7 @@ import (
 // ParseWorkflowRunEvent needs generics
 func ParseWorkflowRunEvent(payload []byte) (*github.WorkflowRunEvent, error) {
 	evt := &github.WorkflowRunEvent{}
+
 	if err := json.Unmarshal(payload, evt); err != nil {
 		log.Println("Invalid JSON?", err)
 
